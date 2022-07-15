@@ -39,15 +39,15 @@ public class PricePlanService {
     }
 
     private BigDecimal calculateCost(List<ElectricityReading> electricityReadings, PricePlan pricePlan) {
-        BigDecimal average = calculateAverageReading(electricityReadings);
-        BigDecimal timeElapsed = calculateTimeElapsed(electricityReadings);
+        var average = calculateAverageReading(electricityReadings);
+        var timeElapsed = calculateTimeElapsed(electricityReadings);
 
-        BigDecimal averagedCost = average.divide(timeElapsed, RoundingMode.HALF_UP);
+        var averagedCost = average.divide(timeElapsed, RoundingMode.HALF_UP);
         return averagedCost.multiply(pricePlan.getUnitRate());
     }
 
     private BigDecimal calculateAverageReading(List<ElectricityReading> electricityReadings) {
-        BigDecimal summedReadings = electricityReadings.stream()
+        var summedReadings = electricityReadings.stream()
                 .map(ElectricityReading::getReading)
                 .reduce(BigDecimal.ZERO, (reading, accumulator) -> reading.add(accumulator));
 
@@ -55,10 +55,10 @@ public class PricePlanService {
     }
 
     private BigDecimal calculateTimeElapsed(List<ElectricityReading> electricityReadings) {
-        ElectricityReading first = electricityReadings.stream()
+        var first = electricityReadings.stream()
                 .min(Comparator.comparing(ElectricityReading::getTime))
                 .get();
-        ElectricityReading last = electricityReadings.stream()
+        var last = electricityReadings.stream()
                 .max(Comparator.comparing(ElectricityReading::getTime))
                 .get();
 
