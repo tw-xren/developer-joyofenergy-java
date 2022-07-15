@@ -11,7 +11,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 @Service
 public class PricePlanService {
@@ -25,14 +26,16 @@ public class PricePlanService {
     }
 
     public Optional<Map<String, BigDecimal>> getConsumptionCostOfElectricityReadingsForEachPricePlan(String smartMeterId) {
-        Optional<List<ElectricityReading>> electricityReadings = meterReadingService.getReadings(smartMeterId);
+        return meterReadingService
+                .getReadings(smartMeterId)
+                .map(readings ->
+                        pricePlans
+                                .stream()
+                                .collect(
+                                        toMap(PricePlan::getPlanName, t -> calculateCost(readings, t))
+                                )
+                );
 
-        if (!electricityReadings.isPresent()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(pricePlans.stream().collect(
-                Collectors.toMap(PricePlan::getPlanName, t -> calculateCost(electricityReadings.get(), t))));
     }
 
     private BigDecimal calculateCost(List<ElectricityReading> electricityReadings, PricePlan pricePlan) {
